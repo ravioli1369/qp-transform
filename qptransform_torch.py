@@ -498,14 +498,14 @@ class QpTransform:
 
         self.series = TimeSeries(data=numpy.asarray(data), times=numpy.asarray(times))
 
-        # whiten with full data segment, and then apply outseg cut
-        if whiten is True:
-            self.series = self.series.whiten()
+        # # whiten with full data segment, and then apply outseg cut
+        # if whiten is True:
+        #     self.series = self.series.whiten()
 
-        if outseg is not None:
-            self.series = self.series.crop(outseg[0], outseg[-1])
+        # if outseg is not None:
+        #     self.series = self.series.crop(outseg[0], outseg[-1])
 
-        self.times = self.series.times.value
+        self.times = numpy.asarray(times)
 
         self.qpgram = qp_scan(
             self.series,
@@ -695,9 +695,9 @@ def qp_scan(
     QpGram object with the found Q and p
     """
     duration = times[-1] - times[0]
-    sampling = numpy.ceil(1.0 / (times[1] - times[0]))
-    fft_series = scipy.fft.fft(series)
-    fft_freqs = scipy.fft.fftfreq(len(series)) * sampling
+    sampling = torch.ceil(1.0 / (times[1] - times[0]))
+    fft_series = torch.fft.fft(series)
+    fft_freqs = torch.fft.fftfreq(len(series)) * sampling
 
     if qrange[0] == qrange[-1] and prange[0] == prange[-1]:
         Q = qrange[0]
@@ -956,7 +956,7 @@ def filfreqboundaries(filqpobject):
         i_lst.append(frequencies[nonzero[0]])
         if (
             nonzero[-1] == nonzero[0] + len(nonzero) - 1
-        ):  # uniqpue interval simply connected
+        ):  # unique interval simply connected
             i_lst.append(frequencies[nonzero[-1]])
         else:
             for l in range(1, len(nonzero)):
